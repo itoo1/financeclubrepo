@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club de Finanzas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#09090b;
+  --bg2:#0f0f12;
+  --surface:#131318;
+  --surface2:#1a1a22;
+  --border:#1f1f28;
+  --border2:#2a2a36;
+  --text:#e2e2e8;
+  --text2:#a8a8b8;
+  --muted:#5a5a70;
+  --muted2:#3a3a4a;
+  --white:#f0f0f4;
+  --steel:#7b9ab5;
+  --steel2:#4a6a8a;
+  --steel-dim:#2a3a4a;
+  --gold:#c4a96b;
+  --gold-dim:#4a3e28;
+  --green:#4dab7a;
+  --red:#c05050;
+  --serif:'Playfair Display',Georgia,serif;
+  --body:'Libre Baskerville',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.6;
+  overflow-x:hidden;
+}
+
+/* subtle noise texture */
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
+
+/* ===== TICKER ===== */
+.ticker-bar{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  height:34px;
+  display:flex;
+  align-items:center;
+  position:sticky;
+  top:0;
+  z-index:100;
+  overflow:hidden;
+}
+.ticker-pill{
+  flex-shrink:0;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--steel);
+  padding:0 20px;
+  border-right:1px solid var(--border2);
+  height:100%;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--surface);
+  z-index:2;
+}
+.ticker-dot{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--steel);
+  animation:blink 2.5s ease infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+.ticker-scroll{flex:1;overflow:hidden}
+.ticker-track{
+  display:flex;
+  animation:scroll 50s linear infinite;
+  white-space:nowrap;
+}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tick-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 24px;
+  border-right:1px solid var(--border);
+  height:34px;
+  font-family:var(--mono);
+  font-size:10px;
+}
+.tick-item .t-sym{color:var(--text2);letter-spacing:0.06em;font-weight:400}
+.tick-item .t-val{color:var(--muted)}
+.tick-item .t-chg{font-size:9px;letter-spacing:0.04em}
+.t-chg.up{color:var(--green)}
+.t-chg.dn{color:var(--red)}
+
+/* ===== NAV ===== */
+.nav{
+  position:sticky;
+  top:34px;
+  z-index:99;
+  background:rgba(9,9,11,0.95);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  height:60px;
+  display:flex;
+  align-items:stretch;
+}
+.nav-logo{
+  display:flex;
+  align-items:center;
+  padding:0 28px;
+  gap:14px;
+  border-right:1px solid var(--border);
+  text-decoration:none;
+  flex-shrink:0;
+}
+.logo-glyph{
+  width:32px;height:32px;
+  border:1px solid var(--steel2);
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+.logo-glyph::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border:1px solid var(--steel-dim);
+}
+.logo-glyph span{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size:14px;
+  font-weight:600;
+  color:var(--steel);
+  z-index:1;
+}
+.logo-name{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:16px;
+  letter-spacing:0.04em;
+  color:var(--white);
+}
+.logo-name em{
+  font-style:italic;
+  color:var(--steel);
+}
+.nav-links{
+  display:flex;
+  list-style:none;
+  align-items:stretch;
+}
+.nav-links a{
+  display:flex;
+  align-items:center;
+  padding:0 22px;
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:400;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-decoration:none;
+  border-right:1px solid var(--border);
+  transition:color 0.2s;
+  position:relative;
+}
+.nav-links a::after{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:var(--steel);
+  transform:scaleX(0);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-links a:hover{color:var(--text2)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-links a.active{color:var(--white)}
+.nav-end{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+  gap:20px;
+  border-left:1px solid var(--border);
+}
+.clock{
+  font-family:var(--mono);
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:0.06em;
+}
+.btn-join{
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--bg);
+  background:var(--steel);
+  padding:8px 18px;
+  text-decoration:none;
+  transition:background 0.2s;
+}
+.btn-join:hover{background:var(--white)}
+
+/* ===== HERO ===== */
+.hero{
+  display:grid;
+  grid-template-columns:1fr 340px;
+  min-height:calc(100vh - 94px);
+  border-bottom:1px solid var(--border);
+  position:relative;
+  z-index:1;
+}
+
+/* ambient light */
+.hero::before{
+  content:"";
+  position:absolute;
+  top:-100px;left:-200px;
+  width:800px;height:800px;
+  background:radial-gradient(circle, rgba(123,154,181,0.04) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.hero-body{
+  padding:72px 72px 60px;
+  display:flex;
+  flex-direction:column;
+  border-right:1px solid var(--border);
+}
+.hero-eyebrow{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--steel);
+  margin-bottom:36px;
+}
+.hero-eyebrow::after{
+  content:"";
+  height:1px;
+  width:48px;
+  background:var(--steel2);
+}
+.hero-title{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:clamp(56px,8vw,112px);
+  line-height:0.92;
+  letter-spacing:-0.02em;
+  margin-bottom:44px;
+  flex-shrink:0;
+}
+.hero-title .t-light{
+  font-weight:400;
+  font-style:italic;
+  color:var(--text2);
+}
+.hero-title .t-bold{
+  font-weight:600;
+  color:var(--white);
+  display:block;
+}
+.hero-title .t-rule{
+  display:block;
+  width:100%;
+  height:1px;
+  background:linear-gradient(90deg, var(--border2) 0%, transparent 80%);
+  margin:20px 0;
+}
+.hero-intro{
+  font-family:var(--body);
+  font-size:17px;
+  font-weight:400;
+  line-height:1.75;
+  color:var(--text2);
+  max-width:580px;
+  margin-bottom:48px;
+}
+.hero-intro strong{color:var(--text);font-weight:700}
+.hero-actions{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-top:auto;
+}
+.btn-primary{
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--bg);
+  background:var(--white);
+  padding:13px 26px;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:all 0.2s;
+}
+.btn-primary:hover{background:var(--steel);gap:14px}
+.btn-ghost{
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--text2);
+  text-decoration:none;
+  border:1px solid var(--border2);
+  padding:13px 26px;
+  transition:all 0.2s;
+}
+.btn-ghost:hover{border-color:var(--muted);color:var(--white)}
+
+/* Hero metrics */
+.hero-metrics{
+  display:flex;
+  gap:0;
+  border-top:1px solid var(--border);
+  padding-top:40px;
+  margin-top:48px;
+}
+.hm{
+  flex:1;
+  padding-right:32px;
+  border-right:1px solid var(--border);
+  margin-right:32px;
+}
+.hm:last-child{border-right:none;margin-right:0;padding-right:0}
+.hm-val{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:36px;
+  color:var(--white);
+  line-height:1;
+  letter-spacing:-0.02em;
+  margin-bottom:6px;
+}
+.hm-val sup{font-size:16px;font-weight:400;color:var(--steel)}
+.hm-label{
+  font-family:var(--sans);
+  font-size:10px;
+  font-weight:400;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.hm-delta{
+  font-family:var(--mono);
+  font-size:10px;
+  color:var(--green);
+}
+
+/* Hero sidebar */
+.hero-side{
+  display:flex;
+  flex-direction:column;
+}
+.sb{
+  padding:28px;
+  border-bottom:1px solid var(--border);
+  flex:1;
+  display:flex;
+  flex-direction:column;
+}
+.sb-title{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:var(--steel);
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+
+/* Sparkline */
+.sparkline-wrap{position:relative;height:80px;margin-bottom:16px}
+.sparkline-val{
+  position:absolute;
+  top:0;right:0;
+  font-family:var(--mono);
+  font-size:20px;
+  font-weight:300;
+  color:var(--white);
+  line-height:1;
+}
+.sparkline-delta{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.08em;
+  color:var(--green);
+  margin-top:4px;
+}
+.spark-axis{
+  display:flex;
+  justify-content:space-between;
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+/* Events */
+.event-item{
+  display:grid;
+  grid-template-columns:50px 1fr;
+  gap:14px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+  align-items:start;
+}
+.event-item:last-child{border-bottom:none}
+.ev-date{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-align:center;
+  color:var(--muted);
+  line-height:1.3;
+}
+.ev-date .day{
+  display:block;
+  font-family:var(--serif);
+  font-size:22px;
+  font-weight:400;
+  color:var(--text2);
+  line-height:1;
+  margin-bottom:2px;
+}
+.ev-info .ev-name{
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:500;
+  color:var(--text);
+  margin-bottom:3px;
+  line-height:1.4;
+}
+.ev-info .ev-meta{
+  font-family:var(--mono);
+  font-size:9px;
+  color:var(--muted);
+  letter-spacing:0.05em;
+}
+
+/* ===== ABOUT ===== */
+#about{
+  display:grid;
+  grid-template-columns:200px 1fr;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  z-index:1;
+}
+.aside-nav{
+  border-right:1px solid var(--border);
+  padding:48px 0;
+  position:sticky;
+  top:94px;
+  height:fit-content;
+}
+.aside-nav .an-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.2em;
+  color:var(--steel);
+  padding:0 24px;
+  margin-bottom:20px;
+  text-transform:uppercase;
+}
+.aside-nav ul{list-style:none}
+.aside-nav li a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:9px 24px;
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:400;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--muted);
+  text-decoration:none;
+  transition:all 0.2s;
+  border-left:1px solid transparent;
+}
+.aside-nav li a:hover{color:var(--text2);border-left-color:var(--border2)}
+.aside-nav li a.active{color:var(--white);border-left-color:var(--steel)}
+
+.about-inner{padding:72px}
+
+/* Section label */
+.sec-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  color:var(--steel);
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:32px;
+}
+.sec-label::after{
+  content:"";flex:1;height:1px;background:var(--border);
+}
+
+.about-lead-text{
+  font-family:var(--body);
+  font-size:20px;
+  font-weight:400;
+  font-style:italic;
+  line-height:1.7;
+  color:var(--text2);
+  max-width:680px;
+  margin-bottom:60px;
+  padding-left:24px;
+  border-left:2px solid var(--steel2);
+}
+.about-lead-text strong{font-style:normal;color:var(--white)}
+
+/* Pillar grid */
+.pillar-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1px;
+  background:var(--border);
+  margin-bottom:60px;
+}
+.pillar-card{
+  background:var(--bg);
+  padding:40px;
+  transition:background 0.3s;
+  position:relative;
+  overflow:hidden;
+}
+.pillar-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;
+  width:2px;
+  height:0;
+  background:var(--steel);
+  transition:height 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.pillar-card:hover{background:var(--surface)}
+.pillar-card:hover::before{height:100%}
+.pc-num{
+  font-family:var(--mono);
+  font-size:10px;
+  letter-spacing:0.2em;
+  color:var(--steel);
+  margin-bottom:16px;
+}
+.pc-title{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:24px;
+  color:var(--white);
+  margin-bottom:12px;
+  letter-spacing:-0.01em;
+}
+.pc-body{
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:300;
+  line-height:1.7;
+  color:var(--text2);
+}
+
+/* Data table */
+.data-section{margin-top:60px}
+.data-section h3{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:28px;
+  color:var(--white);
+  margin-bottom:24px;
+  letter-spacing:-0.01em;
+}
+table.dt{
+  width:100%;
+  border-collapse:collapse;
+}
+.dt thead tr{border-bottom:1px solid var(--border2)}
+.dt th{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--steel);
+  padding:10px 16px;
+  text-align:left;
+  font-weight:400;
+}
+.dt td{
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:300;
+  padding:14px 16px;
+  border-bottom:1px solid var(--border);
+  color:var(--text2);
+  vertical-align:middle;
+}
+.dt td:first-child{color:var(--text);font-weight:400}
+.dt tbody tr{transition:background 0.15s}
+.dt tbody tr:hover td{background:var(--surface)}
+.badge{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border-radius:2px;
+  font-weight:400;
+}
+.badge-green{background:rgba(77,171,122,0.12);color:var(--green);border:1px solid rgba(77,171,122,0.2)}
+.badge-blue{background:rgba(123,154,181,0.12);color:var(--steel);border:1px solid rgba(123,154,181,0.2)}
+
+/* ===== PARTNERS ===== */
+#partners{
+  padding:80px 0;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  z-index:1;
+  overflow:hidden;
+}
+#partners::before{
+  content:"";
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:900px;height:400px;
+  background:radial-gradient(ellipse, rgba(123,154,181,0.03) 0%, transparent 70%);
+  pointer-events:none;
+}
+.partners-inner{
+  max-width:1280px;
+  margin:0 auto;
+  padding:0 72px;
+}
+.partners-header{
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:end;
+  margin-bottom:56px;
+  gap:32px;
+}
+.partners-header h2{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:clamp(36px,4vw,56px);
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  color:var(--white);
+}
+.partners-header h2 em{
+  font-style:italic;
+  color:var(--text2);
+}
+.partners-header p{
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:300;
+  color:var(--muted);
+  max-width:280px;
+  text-align:right;
+  line-height:1.65;
+}
+
+/* Grid que crece solo al añadir tarjetas */
+.partners-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+  gap:1px;
+  background:var(--border);
+}
+
+/* Tarjeta partner */
+.partner-card{
+  background:var(--bg);
+  padding:40px 36px;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  position:relative;
+  overflow:hidden;
+  transition:background 0.3s;
+  cursor:default;
+}
+.partner-card::after{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--steel2), transparent);
+  transform:scaleX(0);
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.partner-card:hover{background:var(--surface)}
+.partner-card:hover::after{transform:scaleX(1)}
+
+/* Logo area */
+.partner-logo{
+  height:52px;
+  display:flex;
+  align-items:center;
+}
+/* Logotipos SVG inline — sin imágenes externas */
+.plogo-bloomberg{
+  font-family:var(--sans);
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:-0.03em;
+  color:var(--white);
+  opacity:0.75;
+  transition:opacity 0.3s;
+  display:flex;
+  align-items:center;
+  gap:0;
+}
+.plogo-bloomberg .bl-b{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:26px;height:26px;
+  background:var(--white);
+  color:var(--bg);
+  font-size:16px;
+  font-weight:700;
+  margin-right:6px;
+  opacity:1;
+  flex-shrink:0;
+}
+.partner-card:hover .plogo-bloomberg{opacity:1}
+
+.plogo-tau{
+  font-family:var(--serif);
+  font-size:26px;
+  font-weight:600;
+  letter-spacing:0.04em;
+  color:var(--white);
+  opacity:0.7;
+  transition:opacity 0.3s;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.plogo-tau .tau-greek{
+  font-size:32px;
+  font-style:italic;
+  color:var(--steel);
+  opacity:0.8;
+  line-height:1;
+}
+.partner-card:hover .plogo-tau{opacity:1}
+
+/* Placeholder para futuros partners */
+.partner-card.placeholder{
+  background:var(--bg);
+  border:1px dashed var(--border2);
+  opacity:0.35;
+  cursor:default;
+  transition:opacity 0.3s;
+}
+.partner-card.placeholder:hover{background:var(--bg);opacity:0.5}
+.partner-card.placeholder::after{display:none}
+.placeholder-inner{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  height:100%;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px 0;
+}
+.placeholder-plus{
+  font-family:var(--mono);
+  font-size:24px;
+  color:var(--muted2);
+  line-height:1;
+}
+.placeholder-text{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted2);
+}
+
+/* Partner info */
+.partner-cat{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--steel);
+}
+.partner-name{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:20px;
+  color:var(--white);
+  letter-spacing:-0.01em;
+  margin-bottom:4px;
+}
+.partner-desc{
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:300;
+  line-height:1.65;
+  color:var(--text2);
+  flex:1;
+}
+.partner-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:var(--steel);
+  border:1px solid var(--steel-dim);
+  padding:4px 10px;
+  align-self:flex-start;
+  margin-top:4px;
+}
+
+/* ===== CONTACT ===== */
+#contact{
+  display:grid;
+  grid-template-columns:1fr 440px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+  z-index:1;
+}
+.contact-left{
+  padding:72px;
+  border-right:1px solid var(--border);
+}
+.contact-left h2{
+  font-family:var(--serif);
+  font-weight:400;
+  font-size:clamp(40px,5vw,72px);
+  line-height:0.95;
+  letter-spacing:-0.02em;
+  color:var(--white);
+  margin-bottom:28px;
+}
+.contact-left h2 em{
+  font-style:italic;
+  color:var(--text2);
+}
+.contact-left p{
+  font-family:var(--body);
+  font-size:16px;
+  font-weight:400;
+  line-height:1.75;
+  color:var(--text2);
+  max-width:460px;
+  margin-bottom:48px;
+}
+.info-rows{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.info-row{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:24px;
+  padding:16px 0;
+  border-bottom:1px solid var(--border);
+  align-items:baseline;
+}
+.info-row:first-child{border-top:1px solid var(--border)}
+.ir-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.ir-val{
+  font-family:var(--sans);
+  font-size:14px;
+  font-weight:300;
+  color:var(--text);
+  line-height:1.5;
+}
+.ir-val a{color:var(--steel);text-decoration:none;transition:color 0.2s}
+.ir-val a:hover{color:var(--white)}
+
+/* Form */
+.contact-form{
+  padding:72px 48px;
+  background:var(--surface);
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+.cf-title{
+  font-family:var(--serif);
+  font-weight:400;
+  font-style:italic;
+  font-size:24px;
+  color:var(--white);
+  margin-bottom:4px;
+}
+.form-field{display:flex;flex-direction:column;gap:8px}
+.fl{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.fi{
+  font-family:var(--sans);
+  font-size:14px;
+  font-weight:300;
+  background:var(--bg2);
+  border:1px solid var(--border2);
+  color:var(--text);
+  padding:12px 14px;
+  outline:none;
+  transition:border-color 0.25s;
+}
+.fi:focus{border-color:var(--steel2)}
+.fi::placeholder{color:var(--muted2)}
+textarea.fi{resize:vertical;min-height:96px}
+.f-submit{
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--bg);
+  background:var(--white);
+  border:none;
+  padding:16px;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  margin-top:8px;
+}
+.f-submit:hover{background:var(--steel)}
+.f-submit .arr{transition:transform 0.2s}
+.f-submit:hover .arr{transform:translateX(4px)}
+
+/* ===== FOOTER ===== */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  position:relative;
+  z-index:1;
+}
+.footer-grid{
+  display:grid;
+  grid-template-columns:1.4fr 1fr 1fr;
+  gap:0;
+  border-bottom:1px solid var(--border);
+}
+.fc{
+  padding:48px 40px;
+  border-right:1px solid var(--border);
+}
+.fc:last-child{border-right:none}
+.fc-label{
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--steel);
+  margin-bottom:20px;
+}
+.fc-brand{
+  font-family:var(--serif);
+  font-weight:400;
+  font-style:italic;
+  font-size:28px;
+  color:var(--white);
+  margin-bottom:14px;
+  letter-spacing:-0.01em;
+}
+.fc p{
+  font-family:var(--sans);
+  font-size:13px;
+  font-weight:300;
+  line-height:1.7;
+  color:var(--muted);
+}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.fc ul li a{
+  font-family:var(--sans);
+  font-size:12px;
+  font-weight:300;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:0.04em;
+  transition:color 0.2s;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.fc ul li a::before{
+  content:"";
+  width:12px;height:1px;
+  background:var(--border2);
+  flex-shrink:0;
+  transition:background 0.2s,width 0.2s;
+}
+.fc ul li a:hover{color:var(--text)}
+.fc ul li a:hover::before{background:var(--steel);width:18px}
+.footer-base{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 40px;
+  font-family:var(--mono);
+  font-size:9px;
+  letter-spacing:0.1em;
+  color:var(--muted2);
+}
+.footer-base .live{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--green);
+}
+.footer-base .live::before{
+  content:"";
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--green);
+  animation:blink 2.5s ease infinite;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.fu{opacity:0;animation:fadeUp 0.9s cubic-bezier(0.16,1,0.3,1) forwards}
+.d1{animation-delay:0.05s}.d2{animation-delay:0.15s}.d3{animation-delay:0.28s}
+.d4{animation-delay:0.40s}.d5{animation-delay:0.52s}.d6{animation-delay:0.64s}
+.sr{opacity:0;transform:translateY(18px);transition:opacity 0.75s ease,transform 0.75s ease}
+.sr.visible{opacity:1;transform:none}
+
+/* chart */
+.chart-path{stroke-dasharray:400;stroke-dashoffset:400;animation:draw 2.2s ease forwards 0.6s}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:960px){
+  .hero{grid-template-columns:1fr}
+  .hero-side{display:none}
+  .hero-body{padding:48px 28px}
+  #about{grid-template-columns:1fr}
+  .aside-nav{display:none}
+  .about-inner{padding:40px 28px}
+  .pillar-grid{grid-template-columns:1fr}
+  #contact{grid-template-columns:1fr}
+  .contact-left{padding:40px 28px}
+  .contact-form{padding:40px 28px}
+  .footer-grid{grid-template-columns:1fr}
+  .fc{border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+  <div class="ticker-pill"><span class="ticker-dot"></span>LIVE</div>
+  <div class="ticker-scroll">
+    <div class="ticker-track" id="tickerTrack"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-glyph"><span>F</span></div>
+    <span class="logo-name">Club <em>de</em> Finanzas</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#inicio" class="active">Inicio</a></li>
+    <li><a href="#about">Sobre Nosotros</a></li>
+    <li><a href="#partners">Partners</a></li>
+    <li><a href="#contact">Contacto</a></li>
+  </ul>
+  <div class="nav-end">
+    <span class="clock" id="clock">--:--:--</span>
+    <a href="#contact" class="btn-join">Únete</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="inicio" class="hero">
+  <div class="hero-body">
+    <div>
+      <div class="hero-eyebrow fu d1">Sociedad Académica · Est. 2013</div>
+      <h1 class="hero-title fu d2">
+        <span class="t-light">Club de</span>
+        <span class="t-bold">Finanzas</span>
+        <span class="t-rule"></span>
+      </h1>
+      <p class="hero-intro fu d3">
+        Una comunidad de <strong>estudiantes y profesionales</strong> comprometidos con el análisis riguroso de los mercados financieros, la economía aplicada y la teoría de inversión. Donde la disciplina importa.
+      </p>
+      <div class="hero-actions fu d4">
+        <a href="#contact" class="btn-primary">Únete al club <span>→</span></a>
+        <a href="#about" class="btn-ghost">Conoce más</a>
+      </div>
+    </div>
+    <div class="hero-metrics fu d5">
+      <div class="hm">
+        <div class="hm-val">220<sup>+</sup></div>
+        <div class="hm-label">Miembros activos</div>
+        <div class="hm-delta">↑ +18 este semestre</div>
+      </div>
+      <div class="hm">
+        <div class="hm-val">XIII</div>
+        <div class="hm-label">Años de historia</div>
+        <div class="hm-delta">↑ Desde 2013</div>
+      </div>
+      <div class="hm">
+        <div class="hm-val">48</div>
+        <div class="hm-label">Sesiones anuales</div>
+        <div class="hm-delta">↑ +4 vs. año anterior</div>
+      </div>
+      <div class="hm">
+        <div class="hm-val">15</div>
+        <div class="hm-label">Asesores académicos</div>
+        <div class="hm-delta">↑ 3 nuevos este año</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-side">
+    <div class="sb">
+      <div class="sb-title">Actividad del club · 2026</div>
+      <div class="sparkline-wrap">
+        <div class="sparkline-val">220 <span style="font-size:12px;color:var(--muted)">mbrs</span></div>
+        <svg width="100%" height="80" viewBox="0 0 284 80" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-top:8px">
+          <defs>
+            <linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7b9ab5" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#7b9ab5" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <path d="M0 68 L24 62 L48 58 L72 60 L96 50 L120 42 L144 44 L168 30 L192 24 L216 18 L240 12 L264 8 L284 4 L284 80 L0 80Z" fill="url(#sg)"/>
+          <path class="chart-path" d="M0 68 L24 62 L48 58 L72 60 L96 50 L120 42 L144 44 L168 30 L192 24 L216 18 L240 12 L264 8 L284 4" stroke="#7b9ab5" stroke-width="1.2" fill="none"/>
+        </svg>
+      </div>
+      <div class="sparkline-delta">↑ +18 miembros vs. semestre anterior</div>
+      <div class="spark-axis" style="margin-top:8px">
+        <span>ENE</span><span>MAR</span><span>MAY</span><span>JUL</span><span>SEP</span>
+      </div>
+    </div>
+
+    <div class="sb">
+      <div class="sb-title">Próximos eventos</div>
+      <div>
+        <div class="event-item">
+          <div class="ev-date"><span class="day">05</span>JUN</div>
+          <div class="ev-info">
+            <div class="ev-name">Análisis de Resultados Q1</div>
+            <div class="ev-meta">19:00 · Aula Magna</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="ev-date"><span class="day">12</span>JUN</div>
+          <div class="ev-info">
+            <div class="ev-name">Taller: Valoración DCF</div>
+            <div class="ev-meta">18:30 · Lab. Informática</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="ev-date"><span class="day">19</span>JUN</div>
+          <div class="ev-info">
+            <div class="ev-name">Mesa Redonda: Fintech 2026</div>
+            <div class="ev-meta">19:00 · Sala de Conferencias</div>
+          </div>
+        </div>
+        <div class="event-item">
+          <div class="ev-date"><span class="day">26</span>JUN</div>
+          <div class="ev-info">
+            <div class="ev-name">Simulación de Cartera</div>
+            <div class="ev-meta">17:00 · Híbrido</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <aside class="aside-nav">
+    <div class="an-label">Índice</div>
+    <ul>
+      <li><a href="#inicio">01 — Inicio</a></li>
+      <li><a href="#about" class="active">02 — Club</a></li>
+      <li><a href="#partners">03 — Partners</a></li>
+      <li><a href="#contact">04 — Contacto</a></li>
+    </ul>
+  </aside>
+
+  <div class="about-inner">
+    <div class="sec-label sr">Sobre el Club</div>
+
+    <p class="about-lead-text sr">
+      Desde 2013, formamos <strong>analistas con criterio propio</strong> capaces de navegar la complejidad de los mercados con rigor intelectual y método. Más allá del ruido, siempre el análisis.
+    </p>
+
+    <div class="pillar-grid sr">
+      <div class="pillar-card">
+        <div class="pc-num">01 / Análisis</div>
+        <div class="pc-title">Rigor cuantitativo</div>
+        <p class="pc-body">Modelos de valoración, macroeconomía aplicada y gestión del riesgo. Cada tesis de inversión requiere datos sólidos y argumentación rigurosa.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pc-num">02 / Mercados</div>
+        <div class="pc-title">Práctica real</div>
+        <p class="pc-body">Carteras simuladas, análisis de empresas cotizadas e informes de research propios. El aprendizaje ocurre en el contacto con los mercados reales.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pc-num">03 / Red</div>
+        <div class="pc-title">Network profesional</div>
+        <p class="pc-body">Alumni en fondos de inversión, banca de inversión y consultoría estratégica. Mentores activos que acompañan el desarrollo de cada miembro.</p>
+      </div>
+      <div class="pillar-card">
+        <div class="pc-num">04 / Ética</div>
+        <div class="pc-title">Finanzas responsables</div>
+        <p class="pc-body">Debatimos el impacto social del capital, criterios ESG y la responsabilidad del sector financiero en la transición hacia una economía sostenible.</p>
+      </div>
+    </div>
+
+    <div class="data-section sr">
+      <h3>Actividades del semestre</h3>
+      <table class="dt">
+        <thead>
+          <tr>
+            <th>Actividad</th>
+            <th>Frecuencia</th>
+            <th>Formato</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sesiones de análisis semanal</td>
+            <td>Jueves · 19:00</td>
+            <td>Presencial</td>
+            <td><span class="badge badge-green">Activo</span></td>
+          </tr>
+          <tr>
+            <td>Talleres de modelos financieros</td>
+            <td>Quincenal</td>
+            <td>Lab. Informática</td>
+            <td><span class="badge badge-green">Activo</span></td>
+          </tr>
+          <tr>
+            <td>Competición de carteras</td>
+            <td>Semestral</td>
+            <td>Online</td>
+            <td><span class="badge badge-green">Activo</span></td>
+          </tr>
+          <tr>
+            <td>Conferencia anual de inversión</td>
+            <td>Junio</td>
+            <td>Híbrido</td>
+            <td><span class="badge badge-blue">Planificado</span></td>
+          </tr>
+          <tr>
+            <td>Publicación de informes de research</td>
+            <td>Mensual</td>
+            <td>Digital</td>
+            <td><span class="badge badge-green">Activo</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section id="partners">
+  <div class="partners-inner">
+    <div class="sec-label sr">Partners & Colaboradores</div>
+    <div class="partners-header sr">
+      <h2>Nuestros<br><em>partners</em></h2>
+      <p>Instituciones y empresas que respaldan la formación financiera del club y la proyección profesional de sus miembros.</p>
+    </div>
+
+    <div class="partners-grid sr">
+
+      <!-- Bloomberg -->
+      <div class="partner-card">
+        <div class="partner-logo">
+          <div class="plogo-bloomberg">
+            <span class="bl-b">B</span>bloomberg
+          </div>
+        </div>
+        <div>
+          <div class="partner-cat">Datos & Terminal</div>
+          <div class="partner-name">Bloomberg</div>
+          <p class="partner-desc">Acceso a terminales Bloomberg para análisis de mercados en tiempo real, datos históricos y herramientas de research profesional.</p>
+        </div>
+        <span class="partner-tag">Socio fundador</span>
+      </div>
+
+      <!-- TAU -->
+      <div class="partner-card">
+        <div class="partner-logo">
+          <div class="plogo-tau">
+            <span class="tau-greek">τ</span>TAU
+          </div>
+        </div>
+        <div>
+          <div class="partner-cat">Institución Académica</div>
+          <div class="partner-name">TAU</div>
+          <p class="partner-desc">Colaboración académica en programas de formación, seminarios y acceso a investigación aplicada en finanzas y economía.</p>
+        </div>
+        <span class="partner-tag">Socio fundador</span>
+      </div>
+
+      <!-- Itaú -->
+      <div class="partner-card">
+        <div class="partner-logo">
+          <svg width="90" height="36" viewBox="0 0 90 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.75;transition:opacity 0.3s" onmouseenter="this.style.opacity=1" onmouseleave="this.style.opacity=0.75">
+            <!-- Símbolo ícono Itaú: arco + punto -->
+            <rect x="0" y="8" width="4" height="20" rx="2" fill="#e8e0d0"/>
+            <path d="M10 18 C10 10 22 4 28 4 C34 4 38 8 38 14 C38 20 34 24 28 28 C22 32 10 28 10 22 Z" fill="none" stroke="#e8e0d0" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="4" cy="4" r="3" fill="#e8e0d0"/>
+            <!-- Wordmark -->
+            <text x="48" y="24" font-family="'DM Sans',sans-serif" font-size="18" font-weight="600" letter-spacing="-0.02em" fill="#e8e0d0">itaú</text>
+          </svg>
+        </div>
+        <div>
+          <div class="partner-cat">Banca & Servicios Financieros</div>
+          <div class="partner-name">Itaú</div>
+          <p class="partner-desc">Uno de los mayores bancos de América Latina, colabora con el club en programas de formación, prácticas profesionales y acceso al ecosistema financiero regional.</p>
+        </div>
+        <span class="partner-tag">Socio institucional</span>
+      </div>
+
+      <!-- Placeholder 2 -->
+      <div class="partner-card placeholder">
+        <div class="placeholder-inner">
+          <div class="placeholder-plus">+</div>
+          <div class="placeholder-text">Próximo partner</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-left">
+    <div class="sec-label sr">Contacto</div>
+    <h2 class="sr">Conecta<br><em>con nosotros</em></h2>
+    <p class="sr">La membresía es gratuita y está abierta a todos los estudiantes. Escríbenos y te informamos sobre la próxima sesión de bienvenida.</p>
+    <div class="info-rows sr">
+      <div class="info-row">
+        <span class="ir-label">Email</span>
+        <span class="ir-val"><a href="mailto:contacto@clubdefinanzas.org">contacto@clubdefinanzas.org</a></span>
+      </div>
+      <div class="info-row">
+        <span class="ir-label">Sesiones</span>
+        <span class="ir-val">Jueves · 19:00 h · Aula Magna</span>
+      </div>
+      <div class="info-row">
+        <span class="ir-label">Sede</span>
+        <span class="ir-val">Facultad de CC. Económicas<br>Edificio Central, Sala 201</span>
+      </div>
+      <div class="info-row">
+        <span class="ir-label">Redes</span>
+        <span class="ir-val">
+          <a href="#">LinkedIn</a> ·
+          <a href="#">Instagram</a> ·
+          <a href="#">Newsletter</a>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-form sr">
+    <div class="cf-title">Formulario de contacto</div>
+    <form onsubmit="submitForm(event)">
+      <div class="form-field">
+        <label class="fl">Nombre completo</label>
+        <input type="text" class="fi" placeholder="Ej. María García" required>
+      </div>
+      <div class="form-field">
+        <label class="fl">Correo electrónico</label>
+        <input type="email" class="fi" placeholder="nombre@universidad.edu" required>
+      </div>
+      <div class="form-field">
+        <label class="fl">Carrera / Año</label>
+        <input type="text" class="fi" placeholder="Ej. ADE, 3.º curso">
+      </div>
+      <div class="form-field">
+        <label class="fl">Mensaje</label>
+        <textarea class="fi" rows="4" placeholder="¿Qué te gustaría saber del club?" required></textarea>
+      </div>
+      <button type="submit" class="f-submit" id="fsub">
+        <span id="ftext">Enviar mensaje</span>
+        <span class="arr">→</span>
+      </button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="fc">
+      <div class="fc-label">Club de Finanzas</div>
+      <div class="fc-brand">Club de Finanzas</div>
+      <p>Sociedad académica de estudios financieros. Rigor, análisis y comunidad desde 2013.</p>
+    </div>
+    <div class="fc">
+      <div class="fc-label">Navegación</div>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#about">Sobre nosotros</a></li>
+        <li><a href="#contact">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="fc">
+      <div class="fc-label">Recursos</div>
+      <ul>
+        <li><a href="#">Informes de research</a></li>
+        <li><a href="#">Newsletter mensual</a></li>
+        <li><a href="#">Calendario de sesiones</a></li>
+        <li><a href="#">Alumni network</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>© 2026 Club de Finanzas — Todos los derechos reservados</span>
+    <span class="live">Sistemas operativos</span>
+  </div>
+</footer>
+
+<script>
+// Clock
+function tick(){
+  const n=new Date();
+  const p=v=>String(v).padStart(2,'0');
+  document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())} CET`;
+}
+setInterval(tick,1000);tick();
+
+// ===== LIVE TICKER =====
+const SYMBOLS = [
+  { sym: 'IBEX 35',    yf: '%5EIBEX'   },
+  { sym: 'DAX',        yf: '%5EGDAXI'  },
+  { sym: 'S&P 500',    yf: '%5EGSPC'   },
+  { sym: 'NASDAQ',     yf: '%5EIXIC'   },
+  { sym: 'EUROSTOXX',  yf: '%5ESTOXX50E'},
+  { sym: 'EUR/USD',    yf: 'EURUSD%3DX'},
+  { sym: 'USD/JPY',    yf: 'JPY%3DX'   },
+  { sym: 'BTC/USD',    yf: 'BTC-USD'   },
+  { sym: 'XAU/USD',    yf: 'GC%3DF'    },
+  { sym: 'WTI',        yf: 'CL%3DF'    },
+  { sym: 'VIX',        yf: '%5EVIX'    },
+  { sym: 'ITUB',       yf: 'ITUB'      },
+];
+
+let liveData = [];
+
+function fmtVal(v, sym) {
+  if (sym.includes('/') || sym === 'VIX') return v.toFixed(2);
+  if (v >= 1000) return v.toLocaleString('es-ES', {maximumFractionDigits: 2});
+  return v.toFixed(2);
+}
+
+function renderTicker(data) {
+  const track = document.getElementById('tickerTrack');
+  let html = '';
+  const items = [...data, ...data]; // duplicate for seamless loop
+  items.forEach(t => {
+    const up = t.chg >= 0;
+    const chgStr = (up ? '+' : '') + t.chg.toFixed(2) + '%';
+    html += `<div class="tick-item">
+      <span class="t-sym">${t.sym}</span>
+      <span class="t-val">${fmtVal(t.price, t.sym)}</span>
+      <span class="t-chg ${up ? 'up' : 'dn'}">${chgStr}</span>
+    </div>`;
+  });
+  track.innerHTML = html;
+
+  // Ajustar duración de animación según número de items
+  const totalItems = items.length;
+  const duration = totalItems * 4; // ~4s por item
+  track.style.animationDuration = duration + 's';
+}
+
+function showFallback() {
+  // Si la API falla, mostrar datos estáticos razonables con indicador
+  const fallback = [
+    {sym:'IBEX 35',price:11432,chg:0.84},
+    {sym:'DAX',price:18920,chg:0.52},
+    {sym:'S&P 500',price:5284,chg:0.31},
+    {sym:'NASDAQ',price:16742,chg:-0.12},
+    {sym:'EUR/USD',price:1.0842,chg:-0.08},
+    {sym:'BTC/USD',price:67450,chg:2.14},
+    {sym:'XAU/USD',price:2341,chg:0.22},
+    {sym:'WTI',price:79.34,chg:0.67},
+    {sym:'VIX',price:14.23,chg:-0.31},
+    {sym:'EUROSTOXX',price:4872,chg:0.45},
+    {sym:'USD/JPY',price:157.82,chg:0.19},
+    {sym:'ITUB',price:14.82,chg:1.10},
+  ];
+  document.querySelector('.ticker-dot').style.background = 'var(--muted)';
+  renderTicker(fallback);
+}
+
+async function fetchQuote(symbol) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=2d`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('fetch failed');
+  const json = await res.json();
+  const meta = json.chart.result[0].meta;
+  const price = meta.regularMarketPrice;
+  const prev  = meta.chartPreviousClose || meta.previousClose || price;
+  const chg   = ((price - prev) / prev) * 100;
+  return { price, chg };
+}
+
+async function loadTicker() {
+  try {
+    const results = await Promise.allSettled(
+      SYMBOLS.map(s => fetchQuote(s.yf).then(q => ({ sym: s.sym, ...q })))
+    );
+    liveData = results
+      .filter(r => r.status === 'fulfilled')
+      .map(r => r.value);
+
+    if (liveData.length < 4) { showFallback(); return; }
+
+    renderTicker(liveData);
+    document.querySelector('.ticker-dot').style.background = 'var(--green)';
+
+    // Refrescar cada 60s
+    setTimeout(loadTicker, 60000);
+  } catch(e) {
+    showFallback();
+  }
+}
+
+// Mostrar fallback inmediatamente y luego intentar datos reales
+showFallback();
+loadTicker();
+
+// Scroll reveal
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}});
+},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.sr').forEach(el=>io.observe(el));
+
+// Nav active
+const sections=document.querySelectorAll('section[id]');
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  const pos=window.scrollY+110;
+  sections.forEach(s=>{
+    if(pos>=s.offsetTop&&pos<s.offsetTop+s.offsetHeight){
+      navAs.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+s.id));
+    }
+  });
+},{passive:true});
+
+// Form
+function submitForm(e){
+  e.preventDefault();
+  const btn=document.getElementById('fsub');
+  const txt=document.getElementById('ftext');
+  btn.style.background='var(--green)';
+  txt.textContent='Mensaje enviado ✓';
+  btn.querySelector('.arr').textContent='';
+  setTimeout(()=>{
+    btn.style.background='var(--white)';
+    txt.textContent='Enviar mensaje';
+    btn.querySelector('.arr').textContent='→';
+    e.target.reset();
+  },3500);
+}
+</script>
+</body>
+</html>
